@@ -31,6 +31,12 @@ namespace CharpShell
             using System.Collections.Generic;
             using System.Text;
             using System.Text.RegularExpressions;
+            using System.ComponentModel;
+            using System.Data;
+            using System.Drawing;
+            using System.Diagnostics;
+            using System.Linq;
+            using System.Windows.Forms;
 
             namespace CScript
             {
@@ -38,8 +44,10 @@ namespace CharpShell
                 {
                     public static void ScriptMethod()
                     { 
+                        Stopwatch sw = new Stopwatch();
+                        sw.Start();   
             ";
-        readonly string footer = @" 
+        readonly string footer = @" sw.Stop();Log(sw.Elapsed.ToString());
                     }
                     static void Log(string message)
                     {
@@ -80,6 +88,7 @@ namespace CharpShell
                     "System.dll",
                     "System.Core.dll",
                     "System.Net.dll",
+                    "System.Data.dll",
                     "System.Drawing.dll",
                     "System.Windows.Forms.dll",
                     Assembly.GetAssembly(typeof(CharpExecuter)).Location,
