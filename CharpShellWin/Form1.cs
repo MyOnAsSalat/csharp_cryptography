@@ -45,7 +45,7 @@ namespace CharpShellWin
             cs = new CharpExecuter(new ExecuteLogHandler(Log));
         }
         
-        public void Log(string msg) 
+        public void Log(object msg) 
         {
             textBox2.Text += string.Concat(msg, Environment.NewLine);
         }

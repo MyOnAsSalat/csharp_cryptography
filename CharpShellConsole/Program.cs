@@ -12,7 +12,7 @@ namespace CharpShellConsole
     class Program
     {
 
-        static void Log(string text) 
+        static void Log(object text) 
         {
             Console.WriteLine(text);
         }

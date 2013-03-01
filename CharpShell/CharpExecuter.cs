@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace CharpShell
 {
-    public delegate void ExecuteLogHandler(string message);
+    public delegate void ExecuteLogHandler(object message);
 
    public class CharpExecuter
     {
