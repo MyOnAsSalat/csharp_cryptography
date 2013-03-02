@@ -22,7 +22,14 @@ namespace CharpShell
             get { return programText; }
             set { programText = value; }
         }
-        
+        private List<string> refferences = new List<string>();
+
+        public List<string> Refferences
+        {
+            get { return refferences; }
+            set { refferences = value; }
+        }
+
         readonly string header = @"
             using System;
             using System.IO;
@@ -49,7 +56,7 @@ namespace CharpShell
             ";
         readonly string footer = @" sw.Stop();Log(sw.Elapsed.ToString());
                     }
-                    static void Log(string message)
+                    static void Log(object message)
                     {
                         if(CharpShell.CharpExecuter.OnExecute != null)
                             CharpShell.CharpExecuter.OnExecute(message);
@@ -61,6 +68,17 @@ namespace CharpShell
         public CharpExecuter(ExecuteLogHandler onExecute)
         {
             OnExecute += onExecute;
+            refferences.AddRange(new string[]
+                {
+                    "System.dll",
+                    "System.Core.dll",
+                    "System.Net.dll",
+                    "System.Data.dll",
+                    "System.Drawing.dll",
+                    "System.Windows.Forms.dll",
+                    Assembly.GetAssembly(typeof(CharpExecuter)).Location,
+
+                });
             
         }
         public void Execute(List<string> code) 
@@ -83,17 +101,7 @@ namespace CharpShell
                 GenerateInMemory = true,
             };
 
-            compilerParams.ReferencedAssemblies.AddRange(new string[]
-                {
-                    "System.dll",
-                    "System.Core.dll",
-                    "System.Net.dll",
-                    "System.Data.dll",
-                    "System.Drawing.dll",
-                    "System.Windows.Forms.dll",
-                    Assembly.GetAssembly(typeof(CharpExecuter)).Location,
-
-                });
+            compilerParams.ReferencedAssemblies.AddRange(refferences.ToArray());
             var compilerResult = CSHarpProvider.CompileAssemblyFromSource(compilerParams, program);
             if (compilerResult.Errors.Count == 0)
             {

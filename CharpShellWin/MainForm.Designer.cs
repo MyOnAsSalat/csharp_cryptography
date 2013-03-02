@@ -1,6 +1,6 @@
 ﻿namespace CharpShellWin
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,15 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
+            this.button4 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -76,8 +78,19 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Code (use \'Log\' method for log)";
             // 
+            // textBox1
+            // 
+            this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBox1.Location = new System.Drawing.Point(3, 16);
+            this.textBox1.MaxLength = 327670;
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(698, 162);
+            this.textBox1.TabIndex = 0;
+            // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.button4);
             this.panel1.Controls.Add(this.button3);
             this.panel1.Controls.Add(this.button2);
             this.panel1.Controls.Add(this.button1);
@@ -87,11 +100,25 @@
             this.panel1.Size = new System.Drawing.Size(704, 33);
             this.panel1.TabIndex = 1;
             // 
+            // button3
+            // 
+            this.button3.Image = ((System.Drawing.Image)(resources.GetObject("button3.Image")));
+            this.button3.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.button3.Location = new System.Drawing.Point(437, 3);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(141, 25);
+            this.button3.TabIndex = 5;
+            this.button3.Text = "Load from file";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // button2
             // 
+            this.button2.Image = ((System.Drawing.Image)(resources.GetObject("button2.Image")));
+            this.button2.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.button2.Location = new System.Drawing.Point(280, 3);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(87, 25);
+            this.button2.Size = new System.Drawing.Size(86, 25);
             this.button2.TabIndex = 4;
             this.button2.Text = "Cls";
             this.button2.UseVisualStyleBackColor = true;
@@ -100,6 +127,8 @@
             // button1
             // 
             this.button1.Font = new System.Drawing.Font("Tahoma", 9.25F);
+            this.button1.Image = ((System.Drawing.Image)(resources.GetObject("button1.Image")));
+            this.button1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.button1.Location = new System.Drawing.Point(155, 3);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(87, 25);
@@ -107,16 +136,6 @@
             this.button1.Text = "Run";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(404, 3);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(87, 25);
-            this.button3.TabIndex = 5;
-            this.button3.Text = "Open";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // groupBox2
             // 
@@ -129,25 +148,27 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Log";
             // 
-            // textBox1
-            // 
-            this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox1.Location = new System.Drawing.Point(3, 18);
-            this.textBox1.MaxLength = 327670;
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(698, 160);
-            this.textBox1.TabIndex = 0;
-            // 
             // textBox2
             // 
             this.textBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox2.Location = new System.Drawing.Point(3, 18);
+            this.textBox2.Location = new System.Drawing.Point(3, 16);
             this.textBox2.MaxLength = 327670;
             this.textBox2.Multiline = true;
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(698, 154);
+            this.textBox2.Size = new System.Drawing.Size(698, 156);
             this.textBox2.TabIndex = 1;
+            // 
+            // button4
+            // 
+            this.button4.Image = ((System.Drawing.Image)(resources.GetObject("button4.Image")));
+            this.button4.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.button4.Location = new System.Drawing.Point(617, 3);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(75, 25);
+            this.button4.TabIndex = 6;
+            this.button4.Text = "Reffs";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // Form1
             // 
@@ -184,6 +205,7 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Button button4;
     }
 }
 

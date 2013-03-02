@@ -11,9 +11,9 @@ using CharpShell;
 
 namespace CharpShellWin
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
         }
@@ -48,6 +48,15 @@ namespace CharpShellWin
         public void Log(object msg) 
         {
             textBox2.Text += string.Concat(msg, Environment.NewLine);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            RefferencesForm rf = new RefferencesForm();
+            rf.Refferences = cs.Refferences.ToArray();
+            rf.ShowDialog();
+            cs.Refferences.Clear();
+            cs.Refferences.AddRange(rf.Refferences);
         }
     }
 }
