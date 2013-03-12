@@ -32,7 +32,7 @@ namespace CharpShellConsole
                     case "!run":
                         {
                             executer.FormatSources(code);
-                            File.WriteAllText("script.cs", executer.ProgramText);
+                            File.WriteAllText("script.cs", executer.LastProgramText);
                             executer.Execute();
                         }
                         break;

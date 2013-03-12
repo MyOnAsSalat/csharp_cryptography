@@ -1,6 +1,6 @@
 ﻿namespace CharpShellWin
 {
-    partial class RefferencesForm
+    partial class ListStringForm
     {
         /// <summary>
         /// Required designer variable.

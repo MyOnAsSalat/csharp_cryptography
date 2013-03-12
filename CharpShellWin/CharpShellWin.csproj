@@ -54,11 +54,11 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RefferencesForm.cs">
+    <Compile Include="ListStringForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="RefferencesForm.Designer.cs">
-      <DependentUpon>RefferencesForm.cs</DependentUpon>
+    <Compile Include="ListStringForm.Designer.cs">
+      <DependentUpon>ListStringForm.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -72,8 +72,8 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="RefferencesForm.resx">
-      <DependentUpon>RefferencesForm.cs</DependentUpon>
+    <EmbeddedResource Include="ListStringForm.resx">
+      <DependentUpon>ListStringForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

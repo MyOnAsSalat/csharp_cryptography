@@ -8,43 +8,46 @@ using System.Reflection;
 
 namespace CharpShell
 {
-    public delegate void ExecuteLogHandler(object message);
+   //Определения делегата для организации вывода результатов выполнения частей кода  
+   public delegate void ExecuteLogHandler(object message);
 
    public class CharpExecuter
-    {
+   {
+       //Код готовый к выполнению
+       string formatedProgramText;
 
-        string programText;
+       public string LastProgramText
+       {
+           get { return formatedProgramText; }
+       }
 
-        public static ExecuteLogHandler OnExecute;
-        
-        public string ProgramText
-        {
-            get { return programText; }
-            set { programText = value; }
-        }
-        private List<string> refferences = new List<string>();
+       //Поле делегата объявлено статическим для того, чтобы можно было
+       //вызывать из программы, которая будет компилироваться 
+       public static ExecuteLogHandler OnExecute;
 
-        public List<string> Refferences
-        {
-            get { return refferences; }
-            set { refferences = value; }
-        }
+       //Список сборок, которые будут подключатся при компиляции
+       private List<string> refferences = new List<string>();
 
-        readonly string header = @"
-            using System;
-            using System.IO;
-            using System.Net;
-            using System.Threading;
-            using System.Collections.Generic;
-            using System.Text;
-            using System.Text.RegularExpressions;
-            using System.ComponentModel;
-            using System.Data;
-            using System.Drawing;
-            using System.Diagnostics;
-            using System.Linq;
-            using System.Windows.Forms;
+       public List<string> Refferences
+       {
+           get { return refferences; }
+           set { refferences = value; }
+       }
 
+       //Список using определений, которые будут добавлены начало кода 
+       private List<string> usings = new List<string>();
+
+       public List<string> Usings
+       {
+           get { return usings; }
+           set { usings = value; }
+       }
+
+       //Предопределенные части программы. Добавляется публичный статический 
+       //метод ScriptMethod, который будет вызыватся из основного приложения 
+       //внутри используется Stopwatch для вычисления времени выполнения программы 
+       //Также объявлен метод Log, который вызывает OnExecute во внешней сборке (см. ниже)
+       readonly string header = @"
             namespace CScript
             {
                 public class Script
@@ -54,7 +57,8 @@ namespace CharpShell
                         Stopwatch sw = new Stopwatch();
                         sw.Start();   
             ";
-        readonly string footer = @" sw.Stop();Log(sw.Elapsed.ToString());
+       
+       readonly string footer = @" sw.Stop();Log(sw.Elapsed.ToString());
                     }
                     static void Log(object message)
                     {
@@ -65,10 +69,11 @@ namespace CharpShell
             }";
 
 
-        public CharpExecuter(ExecuteLogHandler onExecute)
-        {
-            OnExecute += onExecute;
-            refferences.AddRange(new string[]
+       public CharpExecuter(ExecuteLogHandler onExecute)
+       {
+           OnExecute += onExecute;
+           //Инициализация сборок, которые будут добавлены по умолчанию
+           refferences.AddRange(new string[]
                 {
                     "System.dll",
                     "System.Core.dll",
@@ -76,73 +81,107 @@ namespace CharpShell
                     "System.Data.dll",
                     "System.Drawing.dll",
                     "System.Windows.Forms.dll",
+                    //Необходимо добавить свою сборку, чтобы можно было вызывать OnExecute
                     Assembly.GetAssembly(typeof(CharpExecuter)).Location,
 
                 });
-            
-        }
-        public void Execute(List<string> code) 
-        {
-            FormatSources(code);
-
-        }
-
-        public void Execute() 
-        {
-            Execute(programText);
-        }
-
-        public void Execute(string program)
-        {
-            var CSHarpProvider = CSharpCodeProvider.CreateProvider("CSharp");
-            CompilerParameters compilerParams = new CompilerParameters()
+           //Инициализация using которые будут добавлены по умолчанию
+           usings.AddRange(new string[]
             {
-                GenerateExecutable = false,
-                GenerateInMemory = true,
-            };
+                    "System",
+                    "System.IO",
+                    "System.Net",
+                    "System.Threading",
+                    "System.Collections.Generic",
+                    "System.Text",
+                    "System.Text.RegularExpressions",
+                    "System.ComponentModel",
+                    "System.Data",
+                    "System.Drawing",
+                    "System.Diagnostics",
+                    "System.Linq",
+                    "System.Windows.Forms"
+            });
+       }
+       //Выполнение кода
+       public void Execute(List<string> code)
+       {
+           //Форматирование сырого кода (добавление предопределенный частей) 
+           FormatSources(code);
+           //Выполнение
+           Execute();
+       }
 
-            compilerParams.ReferencedAssemblies.AddRange(refferences.ToArray());
-            var compilerResult = CSHarpProvider.CompileAssemblyFromSource(compilerParams, program);
-            if (compilerResult.Errors.Count == 0)
-            {
-                OnExecute(string.Concat("Executing...",Environment.NewLine));
-                try
-                {
-                    
-                    compilerResult.CompiledAssembly.GetType("CScript.Script").GetMethod("ScriptMethod").Invoke(null, null);
-                    OnExecute(string.Empty);
-                    OnExecute("Done.");
-                }
-                catch (Exception e)
-                {
-                    OnExecute(e.InnerException.Message + "rn" + e.InnerException.StackTrace);
-                }
-            }
-            else
-            {
-                foreach (var oline in compilerResult.Output)
-                    OnExecute(oline);
-            }
-        }
+       public void Execute()
+       {
+           Execute(formatedProgramText);
+       }
 
-        public string FormatSources(string text) 
-        {
-            programText = string.Concat(header, text, footer);
-            return programText;
-        }
-        public string FormatSources(List<string> code)
-        {
+       public void Execute(string program)
+       {
+           //Создание класса CSHarpProvider с указанием того, что сборка генерируется в памяти
+           var CSHarpProvider = CSharpCodeProvider.CreateProvider("CSharp");
+           CompilerParameters compilerParams = new CompilerParameters()
+           {
+               GenerateExecutable = false,
+               GenerateInMemory = true,
+           };
+           //Добавление сборок для компиляции
+           compilerParams.ReferencedAssemblies.AddRange(refferences.ToArray());
+           //Компиляция
+           var compilerResult = CSHarpProvider.CompileAssemblyFromSource(compilerParams, program);
+           if (compilerResult.Errors.Count == 0)
+           {
+               OnExecute(string.Concat("Executing...", Environment.NewLine));
+               try
+               {
+                   //Вызов метода ScriptMethod в сборке которая скомпилировалась 
+                   compilerResult.CompiledAssembly.GetType("CScript.Script").GetMethod("ScriptMethod").Invoke(null, null);
+                   OnExecute(string.Empty);
+                   OnExecute("Done.");
+               }
+               catch (Exception e)
+               {
+                   OnExecute(e.InnerException.Message + "rn" + e.InnerException.StackTrace);
+               }
+           }
+           else
+           {
+               foreach (var oline in compilerResult.Output)
+                   OnExecute(oline);
+           }
+       }
 
-            StringBuilder sb = new StringBuilder(header);
+       //Форматирование кода (добавление предопределенных частей)
+       public string FormatSources(string text)
+       {
+           string usings = FormatUsings();
+           formatedProgramText = string.Concat(usings, header, text, footer);
+           return formatedProgramText;
+       }
 
-            foreach (var sc in code)
-            {
-                sb.AppendLine(sc);
-            }
-            sb.AppendLine(footer);
+       public string FormatSources(List<string> code)
+       {
 
-            programText = sb.ToString();
-            return programText;
-        }
-    }
+           StringBuilder sb = new StringBuilder(header);
+
+           foreach (var sc in code)
+           {
+               sb.AppendLine(sc);
+           }
+           sb.AppendLine(footer);
+
+           formatedProgramText = sb.ToString();
+           return formatedProgramText;
+       }
+
+       //Форматирование определений using
+       private string FormatUsings()
+       {
+           StringBuilder sb = new StringBuilder();
+           foreach (string using_str in usings)
+               sb.AppendFormat("using {0};{1}", using_str, Environment.NewLine);
+           return sb.ToString();
+       }
+   }
 }
