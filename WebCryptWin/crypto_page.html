@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>C# Crypto</title>
+</head>
+<h1>C# Crypto</h1>
+<body>
+<table>
+    <tr>
+        <td><textarea id="text" placeholder="Text" rows="5" cols="100"></textarea></td>
+        <td><textarea id="param1" placeholder="Params" rows="5" cols="40"></textarea></td>
+        <td><textarea id="encrypted1" placeholder="Encrypted text" rows="5" cols="100"></textarea></td>
+    </tr>
+    <tr>
+        <td><textarea id="encrypted2" placeholder="Encrypted text" rows="5" cols="100"></textarea></td>
+        <td><textarea id="param2" placeholder="Params" rows="5" cols="40"></textarea></td>
+        <td><textarea id="decrypted" placeholder="Decrypted text" rows="5" cols="100"></textarea></td>      
+    </tr>
+    <tr>
+		<td><button onClick="Encrypt()">Encrypt </button></td>
+        <td></td>
+        <td><button onClick="Decrypt()">Decrypt</button></td>
+    </tr>
+</table>
+<textarea id="code" placeholder="C# code" rows="100" cols="248">
+public class Script
+{
+    public static string Encrypt(string text, string param)
+    {
+        long i = long.Parse(param);
+        return string.Join("", text.Select(x => { i++; return (char)(x + i); }));
+    }
+    public static string Decrypt(string text, string param)
+    {
+        long i = long.Parse(param) + text.Length + 1;
+        return string.Join("", text.Reverse().Select(x => { i--; return (char)(x - i); }).Reverse());
+    }
+}
+</textarea>
+<script type='text/javascript'>
+  
+function Encrypt() 
+{
+  try
+  {
+  AsyncEncrypt(document.getElementById("code").value, 
+            document.getElementById("text").value,
+            document.getElementById("param1").value);
+  }
+  catch
+  {
+    
+  }
+}
+function Decrypt() 
+{
+  try
+  {
+    AsyncDecrypt(document.getElementById("code").value, 
+              document.getElementById("encrypted2").value,
+              document.getElementById("param2").value);
+  }
+  catch
+  {
+    
+  }
+}
+function AsyncEncrypt(code, text, param)
+{
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.open("POST", 'http://127.0.0.1/csharpcrypto/encrypt/', false);
+  xmlHttp.send(code + "%splitter%" + text + "%splitter%" + param);
+  document.getElementById("encrypted1").value = xmlHttp.response;
+  return Promise.resolve(null);
+}
+function AsyncDecrypt(code, text, param)
+{
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.open("POST", 'http://127.0.0.1/csharpcrypto/decrypt/', false);
+  xmlHttp.send(code + "%splitter%" + text + "%splitter%" + param);
+  document.getElementById("decrypted").value = xmlHttp.response;
+  return Promise.resolve(null);
+}
+ </script>
+</body>
+</html>

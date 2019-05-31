@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using CharpShell;
-using System.CodeDom.Compiler;
 using System.IO;
 
 namespace WebCryptWin
 {
     class Program
     {
+        private static string webform => File.ReadAllText(@"crypto_page.html").Replace("\n", " ");
         static void Main()
         {
 
@@ -76,7 +75,7 @@ namespace WebCryptWin
             }
             catch (Exception ex) { return "error"; };
         }
-        private static string webform => System.IO.File.ReadAllText(@"C:\Users\masterpc\Desktop\crypto_page.html").Replace("\n", " ");
+        
 
     }
 }

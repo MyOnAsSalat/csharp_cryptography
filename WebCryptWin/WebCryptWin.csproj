@@ -55,5 +55,10 @@
       <Name>CharpShell</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="crypto_page.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
