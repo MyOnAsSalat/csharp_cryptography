@@ -4,12 +4,9 @@ using System.Linq;
 using System.Text;
 using Microsoft.CSharp;
 using System.CodeDom.Compiler;
-using System.Reflection;
 
 namespace CharpShell
 {
-   //Определения делегата для организации вывода результатов выполнения частей кода  
-   public delegate void ExecuteLogHandler(object message);
 
    public class CharpExecuter
    {
@@ -20,10 +17,6 @@ namespace CharpShell
        {
            get { return formatedProgramText; }
        }
-
-       //Поле делегата объявлено статическим для того, чтобы можно было
-       //вызывать из программы, которая будет компилироваться 
-       public static ExecuteLogHandler OnExecute;
 
        //Список сборок, которые будут подключатся при компиляции
        private List<string> refferences = new List<string>();
@@ -43,81 +36,39 @@ namespace CharpShell
            set { usings = value; }
        }
 
-       //Предопределенные части программы. Добавляется публичный статический 
-       //метод ScriptMethod, который будет вызыватся из основного приложения 
-       //внутри используется Stopwatch для вычисления времени выполнения программы 
-       //Также объявлен метод Log, который вызывает OnExecute во внешней сборке (см. ниже)
        readonly string header = @"
             namespace CScript
             {
-                public class Script
-                {
-                    public static void ScriptMethod()
-                    { 
-                        Stopwatch sw = new Stopwatch();
-                        sw.Start();   
-            ";
-       
-       readonly string footer = @" sw.Stop();Log(sw.Elapsed.ToString());
-                    }
-                    static void Log(object message)
-                    {
-                        if(CharpShell.CharpExecuter.OnExecute != null)
-                            CharpShell.CharpExecuter.OnExecute(message);
-                    }
-                }
-            }";
+            class Basic {}
+            ";     
+       readonly string footer = @"}";
 
 
-       public CharpExecuter(ExecuteLogHandler onExecute)
+       public CharpExecuter()
        {
-           OnExecute += onExecute;
            //Инициализация сборок, которые будут добавлены по умолчанию
            refferences.AddRange(new string[]
                 {
                     "System.dll",
                     "System.Core.dll",
-                    "System.Net.dll",
-                    "System.Data.dll",
-                    "System.Drawing.dll",
-                    "System.Windows.Forms.dll",
-                    //Необходимо добавить свою сборку, чтобы можно было вызывать OnExecute
-                    Assembly.GetAssembly(typeof(CharpExecuter)).Location,
 
                 });
            //Инициализация using которые будут добавлены по умолчанию
            usings.AddRange(new string[]
             {
-                    "System",
-                    "System.IO",
-                    "System.Net",
-                    "System.Threading",
                     "System.Collections.Generic",
                     "System.Text",
                     "System.Text.RegularExpressions",
                     "System.ComponentModel",
-                    "System.Data",
-                    "System.Drawing",
-                    "System.Diagnostics",
                     "System.Linq",
-                    "System.Windows.Forms"
             });
        }
-       //Выполнение кода
-       public void Execute(List<string> code)
-       {
-           //Форматирование сырого кода (добавление предопределенный частей) 
-           FormatSources(code);
-           //Выполнение
-           Execute();
+       public string Execute(string text, string param, Mode mode)
+       {               
+         return Execute(formatedProgramText,text, param, mode);
        }
 
-       public void Execute()
-       {
-           Execute(formatedProgramText);
-       }
-
-       public void Execute(string program)
+       public string Execute(string program,string text, string param, Mode mode)
        {
            //Создание класса CSHarpProvider с указанием того, что сборка генерируется в памяти
            var CSHarpProvider = CSharpCodeProvider.CreateProvider("CSharp");
@@ -132,29 +83,31 @@ namespace CharpShell
            var compilerResult = CSHarpProvider.CompileAssemblyFromSource(compilerParams, program);
            if (compilerResult.Errors.Count == 0)
            {
-               OnExecute(string.Concat("Executing...", Environment.NewLine));
                try
                {
-                   //Вызов метода ScriptMethod в сборке которая скомпилировалась 
-                   compilerResult.CompiledAssembly.GetType("CScript.Script").GetMethod("ScriptMethod").Invoke(null, null);
-                   OnExecute(string.Empty);
-                   OnExecute("Done.");
-               }
-               catch (Exception e)
+                    //Вызов метода ScriptMethod в сборке которая скомпилировалась params
+                    var result = mode == Mode.Encrypt ? 
+                        compilerResult.CompiledAssembly.GetType("CScript.Script").GetMethod("Encrypt").Invoke(null, new object[] { text, param })
+                        :
+                        compilerResult.CompiledAssembly.GetType("CScript.Script").GetMethod("Decrypt").Invoke(null, new object[] { text, param });
+
+                    return (string)result;
+                }
+               catch (Exception)
                {
-                   OnExecute(e.InnerException.Message + "rn" + e.InnerException.StackTrace);
+                    return null;
                }
            }
            else
            {
-               foreach (var oline in compilerResult.Output)
-                   OnExecute(oline);
+                return null;
            }
        }
 
        //Форматирование кода (добавление предопределенных частей)
        public string FormatSources(string text)
        {
+            if (text.Contains("System.")) throw new Exception("'System.' keyword not allowed!");
            string usings = FormatUsings();
            formatedProgramText = string.Concat(usings, header, text, footer);
            return formatedProgramText;
@@ -184,4 +137,9 @@ namespace CharpShell
            return sb.ToString();
        }
    }
+    public enum Mode
+    {
+        Encrypt,
+        Decrypt
+    }
 }

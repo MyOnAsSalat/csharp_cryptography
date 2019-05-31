@@ -38,21 +38,14 @@ namespace CharpShellWin
         //Инициализация
         private void Form1_Load(object sender, EventArgs e)
         {
-            cs = new CharpExecuter(new ExecuteLogHandler(Log));
-        }
-        
-        //Перенаправление вывода в textbox
-        public void Log(object msg) 
-        {
-            textBox2.Text += string.Concat(msg, Environment.NewLine);
-        }
+            cs = new CharpExecuter();
+        }      
 
         //Выполнение введенного кода
         private void button1_Click(object sender, EventArgs e)
         {
-            textBox2.Text = string.Empty;
-            cs.FormatSources(textBox1.Text);
-            cs.Execute();
+            try { cs.FormatSources(textBox1.Text); } catch (Exception ex) { MessageBox.Show(ex.Message); return; };
+            encrypted.Text = cs.Execute(text.Text, param.Text,Mode.Encrypt);
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -80,6 +73,17 @@ namespace CharpShellWin
             rf.FormHeader = "Usings";
             rf.ShowDialog();
             cs.Usings = rf.StringData;
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void decrypt_Click(object sender, EventArgs e)
+        {
+            try { cs.FormatSources(textBox1.Text); } catch (Exception ex) { MessageBox.Show(ex.Message); return; };
+            decrypted.Text = cs.Execute(encrypted2.Text, param2.Text, Mode.Decrypt);
         }
     }
 }
